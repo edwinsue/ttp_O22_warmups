@@ -133,12 +133,12 @@ WHERE rating = 'PG-13';
 
 --hint: 3 errors, 2 are the same type
 WITH top_actor AS (
-SELECT a.actor_id, COUNT(*)
+SELECT a.actor_id, COUNT(*) AS count
 FROM film_actor as fa
 	JOIN film as f ON fa.film_id=f.film_id
 	JOIN actor as a ON fa.actor_id=a.actor_id
-ORDER BY COUNT(*) DESC
 GROUP BY a.actor_id  
+ORDER BY count DESC
 LIMIT 1)
 ,
 films_list AS (
@@ -148,9 +148,9 @@ JOIN film_actor as fa ON f.film_id = fa.film_id
 WHERE fa.actor_id = (SELECT actor_id FROM top_actor)
 )
 
-SELECT DISTINCT fa.actor_id, a.first_name||' '||a.last_name as name
+SELECT DISTINCT fa.actor_id, a.first_name ||' '|| a.last_name as name
 FROM film as f
-	JOIN film_actor as fa 
-	JOIN actor as a 
+	JOIN film_actor as fa ON f.film_id=fa.film_id
+	JOIN actor as a ON a.actor_id=fa.actor_id
 WHERE f.film_id IN (SELECT film_id FROM films_list) AND
 	fa.actor_id != (SELECT actor_id FROM top_actor);
