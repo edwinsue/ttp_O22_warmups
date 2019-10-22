@@ -39,6 +39,7 @@ FROM film
 ORDER by rental_rate
 LIMIT 1
 )
+,
 rate_next_above_1 AS (
 SELECT DISTINCT rental_rate
 FROM film
@@ -49,8 +50,9 @@ LIMIT 1
 
 SELECT title, rental_rate,
 	CASE
-	WHEN rental_rate = (SELECT FROM lowest_rate) THEN 0.10 
-	WHEN rental_rate = (SELECT FROM rate_next_above_1) THEN 1 
+	WHEN rental_rate = (SELECT * FROM lowest_rate) THEN 0.10 
+	WHEN rental_rate = (SELECT * FROM rate_next_above_1) THEN 1
+	ELSE rental_rate 
 	END AS new_rate
 FROM film
 WHERE rating = 'PG-13';
