@@ -61,40 +61,38 @@ WHERE rating = 'PG-13';
 ---------------------------
 
 -- hint: 3 errors
+
 WITH top_actor AS (
 SELECT a.actor_id, COUNT(*)
-FROM film_actor as fa
-	JOIN film as f ON fa.film_id=f.film_id
-	JOIN actor as a ON fa.actor_id=a.actor_id
+FROM film_actor fa
+	INNER JOIN film f ON fa.film_id=f.film_id
+	INNER JOIN actor a ON fa.actor_id=a.actor_id
 GROUP BY a.actor_id
-ORDER BY COUNT(*) DESC) 
-,
-films_list AS (
+ORDER BY COUNT(*) DESC LIMIT 1) 
+, films_list AS (
 SELECT f.film_id, fa.actor_id
-FROM film as f
-JOIN film_actor as fa ON f.film_id = fa.film_id
+FROM film f
+JOIN film_actor fa ON f.film_id = fa.film_id
 WHERE fa.actor_id = (SELECT actor_id FROM top_actor)
 )
 
-SELECT DISTINCT fa.actor_id, a.first_name + a.last_name as name -- || ' ' ||
+SELECT DISTINCT fa.actor_id, a.first_name || ' ' || a.last_name as name
 FROM film as f
 	JOIN film_actor as fa ON f.film_id=fa.film_id
 	JOIN actor as a ON a.actor_id=fa.actor_id
-WHERE f.film_id IN (SELECT film_id FROM films_list) AND
-WHERE fa.actor_id != (SELECT actor_id FROM top_actor); 
-  
+WHERE f.film_id IN (SELECT film_id FROM films_list) AND fa.actor_id != (SELECT actor_id FROM top_actor); 
   
   
 -- BONUS ROUND! Go through again, this time there's new errors!
 -- hint: 3 errors
 WITH with_holidays AS (
-SELECT title, description, rental_rate 
+SELECT title, description, rental_rate, 
 	CASE
-	WHEN titel ILIKE '%halloween%' OR description ILIKE '%halloween%' THEN 'Halloween' 
+	WHEN title ILIKE '%halloween%' OR description ILIKE '%halloween%' THEN 'Halloween' 
 	WHEN title ILIKE '%christmas%' OR description ILIKE '%christmas%' THEN 'Christmas'
 	WHEN title ILIKE '%valentine%' OR description ILIKE '%valentine%' THEN 'Valentines Day'
 	ELSE ''
-	END 
+	END AS holiday
 FROM film
 ORDER BY holiday DESC, title)
 SELECT *,
