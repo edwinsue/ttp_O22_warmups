@@ -14,10 +14,11 @@
 WITH with_holidays AS (
 SELECT title, description, rental_rate,
 	CASE
-	WHEN title LIKE halloween OR description LIKE halloween THEN Halloween 
-	WHEN title LIKE christmas OR description LIKE christmas THEN Christmas 
-	WHEN title LIKE valentine OR description LIKE valentine THEN Valentines_Day 
-	ELSE '' 
+	WHEN title LIKE 'halloween' OR description LIKE 'halloween' THEN 'Halloween' 
+	WHEN title LIKE 'christmas' OR description LIKE 'christmas' THEN 'Christmas' 
+	WHEN title LIKE 'valentine' OR description LIKE 'valentine' THEN 'Valentines_Day' 
+	ELSE ''
+	END AS holiday 
 FROM film
 ORDER BY holiday DESC, title)
 SELECT *,
